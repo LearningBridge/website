@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="DH8WpUS2CHiZaRUOWLBX1czqqpp9OqMxuc2GcOas91M" />
+    <title>Learning Bridge｜学びを、人生の"羅針盤"に！！</title>
+    <!-- Tailwind CSS CDNをロード -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSSカスタムプロパティ */
+        :root {
+            --lb-blue: #0ea5e9;
+            --lb-dark-blue: #13538a;
+            --lb-header-bg: #1b6895;
+        }
+
+        /* カスタムフォントと基本設定 */
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            line-height: 1.75;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        /* ページ切り替えアニメーション */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 5rem; /* ヘッダーの高さ */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .page.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ヘッダーの固定スタイル */
+        header {
+            box-shadow: 0 1px 10px rgba(0,0,0,0.08);
+        }
+
+        /* ハンバーガーメニューアイコン（白） */
+        .hamburger span {
+            background-color: white;
+        }
+
+        /* サイドメニューのスタイル */
+        .side-menu {
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateX(100%); /* デフォルトで右に隠す */
+        }
+        .side-menu.active {
+            transform: translateX(0); /* 表示 */
+        }
+        
+        /* H2セクションタイトルの下線スタイル */
+        .h2-title {
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        .h2-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--lb-blue);
+            border-radius: 1px;
+        }
+
+        /* CTAボタン共通スタイル (白背景・青文字) */
+        .cta-button {
+            border: 2px solid var(--lb-blue);
+            color: var(--lb-blue);
+            background-color: white;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            font-family: inherit;
+        }
+        .cta-button:hover {
+            background-color: #e0f2fe;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* ヒーローセクション内などの青背景上のボタン（白背景・青文字） */
+        .cta-button-inverse {
+            border: 2px solid white;
+            color: var(--lb-blue);
+            background-color: white;
+        }
+        .cta-button-inverse:hover {
+            background-color: #f0f9ff;
+            color: var(--lb-dark-blue);
+        }
+
+        /* フッターの「お問い合わせ」ボタン */
+        footer .cta-button {
+            border-color: white;
+            color: white;
+            background: transparent;
+        }
+        footer .cta-button:hover {
+             background: rgba(255,255,255,0.1);
+        }
+        
+        /* 会員特典の見出しのスタイル統一 */
+        .benefit-title-styled {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--lb-blue);
+        }
+
+        /* モバイル調整 */
+        @media (max-width: 768px) {
+             .message-grid {
+                 grid-template-columns: 1fr;
+             }
+             .message-profile {
+                 order: 1; 
+             }
+             .message-content {
+                 order: 2; 
+             }
+             /* 代表写真の横長を維持 */
+             .profile-image {
+                height: 200px !important;
+             }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="fixed top-0 w-full z-50 bg-[#1b6895] shadow-lg">
+        <nav class="max-w-7xl mx-auto flex justify-between items-center py-4 px-4 sm:px-6 lg:px-8">
+            <a href="#" onclick="showPage('home')" class="logo-link">
+                <img src="https://i.imgur.com/MCX6lbB.jpeg" alt="Learning Bridgeロゴ" class="h-10 cursor-pointer">
+            </a>
+            <!-- ハンバーガーメニュー (修正点1: クリックしてページ遷移可能に) -->
+            <div class="hamburger w-8 h-6 flex flex-col justify-around cursor-pointer z-50" onclick="toggleMenu()">
+                <span class="block w-full h-[3px] bg-white transition duration-300 rounded"></span>
+                <span class="block w-full h-[3px] bg-white transition duration-300 rounded"></span>
+                <span class="block w-full h-[3px] bg-white transition duration-300 rounded"></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- サイドメニュー -->
+    <div class="side-menu fixed top-0 right-0 w-80 h-screen bg-gradient-to-b from-[#0ea5e9] to-[#3b82f6] p-8 pt-24 z-40 shadow-2xl">
+        <ul class="list-none p-0 flex flex-col gap-6">
+            <li><a href="#" onclick="showPage('company'); toggleMenu();" class="text-white text-xl font-semibold hover:bg-white/20 p-3 rounded-lg block transition">会社概要</a></li>
+            <li><a href="#" onclick="showPage('services'); toggleMenu();" class="text-white text-xl font-semibold hover:bg-white/20 p-3 rounded-lg block transition">サービス</a></li>
+            <li><a href="#" onclick="showPage('membership'); toggleMenu();" class="text-white text-xl font-semibold hover:bg-white/20 p-3 rounded-lg block transition">賛助会員募集</a></li>
+            <li><a href="#" onclick="showPage('news'); toggleMenu();" class="text-white text-xl font-semibold hover:bg-white/20 p-3 rounded-lg block transition">お知らせ</a></li>
+        </ul>
+    </div>
+
+    <!-- オーバーレイ -->
+    <div class="overlay fixed top-0 left-0 w-full h-full bg-black/50 opacity-0 invisible transition duration-300 z-30" onclick="toggleMenu()"></div>
+
+    <!-- ============================================== -->
+    <!-- HOME PAGE -->
+    <!-- ============================================== -->
+    <div class="page active" id="home">
+        <!-- ヒーローセクション (水色グラデーションに変更) -->
+        <div class="hero bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white pt-24 pb-20 text-center relative overflow-hidden">
+            <div class="hero-content max-w-4xl mx-auto px-4 relative z-10">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-white">学びを、人生の羅針盤に！！</h1>
+                <p class="text-lg sm:text-xl text-blue-50 mb-10 leading-relaxed">学生と教員、そして社会をつなぐ——<br>共に学び合い、挑戦できる教育の未来を創る</p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <!-- ボタンデザイン調整 (青背景用) -->
+                    <button class="cta-button-inverse py-3 px-8 rounded-full text-base font-bold shadow-lg transition transform hover:-translate-y-1" onclick="showPage('membership')">
+                        賛助会員（共創パートナー）募集
+                    </button>
+                    <a class="cta-button-inverse py-3 px-8 rounded-full text-base font-bold shadow-lg transition transform hover:-translate-y-1" href="https://docs.google.com/forms/d/e/1FAIpQLSfT027WJZyBzb6FulIPU-Rkz6tsgTvjTdcpyZiWTMYDm5NxXQ/viewform?usp=dialog" target="_blank">
+                        お問い合わせ
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <section class="about bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">共に、学びの"再構築"を</h2>
+            <div class="max-w-3xl mx-auto">
+                <p class="text-gray-600 mb-6 text-base">
+                    私たちLearning Bridgeは、現代の教育を"再構築"することを目指す教育支援団体です。<br>
+                    （現在、「一般社団法人Learning Bridge」設立準備中）
+                </p>
+                <p class="text-gray-600 mb-6 text-base">
+                    現在、学校現場では「生徒の主体性を育てたい」「もっと良い授業を届けたい」という想いを持つ教員の方々がたくさんいらっしゃいます。<br>
+                    しかし、その一方で、限られた時間や環境の中で新たな学びの形を創造することは、容易ではありません。
+                </p>
+                <p class="text-gray-600 mb-6 text-base">
+                    そこで、私たちは、そんな教育現場に寄り添いながら、学生が自ら問いを立て、仲間と共に考え、行動へとつなげていける学びの形を学校・地域・社会と共に創り出していきたいと考えています。
+                </p>
+                <p class="text-gray-600 mb-6 text-base">
+                    そのためにも、Learning Bridgeでは、授業準備・運営の伴走や探究学習のサポート、ワークショップやイベントの企画運営を通して、学生と教員、そして社会をつなぐ"学びの再構築"に取り組んでいます。
+                </p>
+
+                <img src="https://i.imgur.com/lmOrwTJ.png" alt="活動実績を示すグラフ画像" class="about-image w-full max-w-xl h-auto rounded-xl mx-auto my-8 shadow-lg">
+
+                <div class="text-center mt-10">
+                    <button class="cta-button py-3 px-8 rounded-full text-base font-bold" onclick="showPage('company')">会社概要について</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="values bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">3つの軸で描く「学びの未来」</h2>
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="bg-gray-50 p-6 sm:p-8 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:shadow-lg transition duration-300 hover:translate-x-1">
+                    <div class="text-xl font-bold text-[#0ea5e9] mb-3">① 共創 ― つながる力</div>
+                    <p class="text-base text-gray-600">教える者と学ぶ者が一体となり、学びを共に創る環境をデザインします。</p>
+                </div>
+                <div class="bg-gray-50 p-6 sm:p-8 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:shadow-lg transition duration-300 hover:translate-x-1">
+                    <div class="text-xl font-bold text-[#0ea5e9] mb-3">② 挑戦 ― 動かす力</div>
+                    <p class="text-base text-gray-600">失敗を恐れず、試行錯誤を重ねるプロセスそのものを価値として捉えます。</p>
+                </div>
+                <div class="bg-gray-50 p-6 sm:p-8 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:shadow-lg transition duration-300 hover:translate-x-1">
+                    <div class="text-xl font-bold text-[#0ea5e9] mb-3">③ 信頼 ― 支える力</div>
+                    <p class="text-base text-gray-600">教育現場の努力に寄り添い、共に前進するパートナーとして伴走します。</p>
+                </div>
+            </div>
+            <p class="text-center text-lg font-semibold text-[#0ea5e9] mt-12 leading-relaxed">
+                学びは、人と人のあいだに生まれる。<br>
+                だからこそ、共に考え、共に行動していきます。
+            </p>
+        </section>
+
+        <section class="services-section bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">サービス｜理念を、現場で形に</h2>
+            <p class="text-center text-base text-gray-600 mb-10">
+                Learning Bridgeでは、次の3つの事業を柱に活動しています。
+            </p>
+            
+            <div class="max-w-4xl mx-auto space-y-10">
+                <!-- Service 01 (改行を削除) -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl border-l-4 border-[#0ea5e9] shadow-lg hover:shadow-2xl transition duration-300">
+                    <div class="service-content">
+                        <h3 class="text-2xl font-bold text-[#0ea5e9] mb-2">① 授業準備・運営の伴走支援</h3>
+                        <p class="text-base text-gray-600">教員一人ひとりの想いや授業テーマに合わせて、共に学生の主体性を引き出す仕組みを構築いたします。</p>
+                    </div>
+                </div>
+                <!-- Service 02 -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl border-l-4 border-[#0ea5e9] shadow-lg hover:shadow-2xl transition duration-300">
+                    <div class="service-content">
+                        <h3 class="text-2xl font-bold text-[#0ea5e9] mb-2">② キャリア・社会教育の企画運営</h3>
+                        <p class="text-base text-gray-600">
+                            金融リテラシー・将来設計・自己分析・メンタルマネジメント・生成AIなど、実社会で活躍するために不可欠なスキルの習得を目的とした学び合いの場を提供いたします。
+                        </p>
+                    </div>
+                </div>
+                <!-- Service 03 (タイトルと改行を修正) -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl border-l-4 border-[#0ea5e9] shadow-lg hover:shadow-2xl transition duration-300">
+                    <div class="service-content">
+                        <h3 class="text-2xl font-bold text-[#0ea5e9] mb-2">③ ワークショップ・教育系イベント企画運営</h3>
+                        <p class="text-base text-gray-600">
+                            学生・教員・企業・自治体など、立場を超えて学び合う場を創出し、教育と社会をつなぐ"共創の場"として、対話を生み出すイベントを開催いたします。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="achievement-box bg-white p-8 rounded-xl border-4 border-[#0ea5e9] shadow-xl mt-12 max-w-4xl mx-auto">
+                <h4 class="text-xl font-bold text-[#0ea5e9] mb-4">《活動実績（ハイライト）》</h4>
+                <p class="text-base text-gray-600 mb-6">
+                    これまでにも授業準備・運営、ワークショップなどを数多く実施。<br>
+                    参加者アンケートでは、満足度（5段階評価）が平均4.5以上と高い評価をいただいています。<br>
+                    「また探究学習を実施してほしい」「次回もぜひ参加したい」といった声も多く、継続的な学びの機会を求める声も増えてきております。
+                </p>
+                <img src="https://i.imgur.com/xTlUjpy.jpeg" alt="活動実績を示す集合写真" class="w-full h-auto rounded-xl mx-auto my-6 shadow-md">
+
+                <div class="text-center mt-10">
+                    <button class="cta-button py-3 px-8 rounded-full text-base font-bold" onclick="showPage('services')">サービス詳細</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="flow bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">ご相談から実施・サポートまでの流れ</h2>
+            <div class="max-w-3xl mx-auto space-y-6">
+                <!-- Flow Items -->
+                <div class="bg-gray-50 p-6 rounded-xl relative pl-24 shadow-sm">
+                    <div class="flow-number absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] text-white rounded-full flex items-center justify-center text-xl font-bold">1</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">1．お問い合わせ</h3>
+                    <p class="text-base text-gray-600">まずは、お問い合わせフォームまたはメールにてご連絡ください。</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl relative pl-24 shadow-sm">
+                    <div class="flow-number absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] text-white rounded-full flex items-center justify-center text-xl font-bold">2</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">2．相談日設定</h3>
+                    <p class="text-base text-gray-600">担当スタッフよりご連絡し、まずはオンラインでの相談日を調整いたします。</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl relative pl-24 shadow-sm">
+                    <div class="flow-number absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] text-white rounded-full flex items-center justify-center text-xl font-bold">3</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">3．初回相談</h3>
+                    <p class="text-base text-gray-600">現状の課題や目指す方向性を丁寧にヒアリングし、支援内容をご提案いたします。</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl relative pl-24 shadow-sm">
+                    <div class="flow-number absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] text-white rounded-full flex items-center justify-center text-xl font-bold">4</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">4．契約</h3>
+                    <p class="text-base text-gray-600">ご提案内容に納得いただいた上で、正式に契約を締結いたします。</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl relative pl-24 shadow-sm">
+                    <div class="flow-number absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-br from-[#0ea5e9] to-[#3b82f6] text-white rounded-full flex items-center justify-center text-xl font-bold">5</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">5．サービス開始</h3>
+                    <p class="text-base text-gray-600">合意内容に基づき活動および支援を開始し、定期的にフィードバックを行います。</p>
+                </div>
+            </div>
+            <p class="text-center text-lg font-semibold text-[#0ea5e9] mt-12 leading-relaxed">
+                私たちは、一度きりの活動および支援ではなく、<br>
+                "共創していくパートナー"として伴走していきます。
+            </p>
+        </section>
+
+        <section class="membership-section bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">未来の教育をつくる仲間と共に</h2>
+            <div class="max-w-3xl mx-auto">
+                <p class="text-center text-base text-gray-600 mb-4">
+                    私たちの活動は、多くの企業や団体の皆さまのご支援と共創によって支えられています。<br>
+                    それぞれの想いや専門性がつながることで、「教育を社会とともに育てる」新しい形が生まれています。
+                </p>
+                <p class="text-center text-xl font-bold text-[#13538a] mb-12">
+                    Learning Bridgeでは、未来を担う若者の学びを共に支える賛助会員（共創パートナー）を大募集しています。
+                </p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <button class="cta-button py-3 px-8 rounded-full text-base font-bold" onclick="showPage('membership')">
+                        賛助会員（共創パートナー）募集
+                    </button>
+                    <button class="cta-button py-3 px-8 rounded-full text-base font-bold" onclick="showPage('partners')">
+                        会員・パートナー（一覧）
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- コンタクトセクション (水色グラデーションに変更) -->
+        <section class="contact-section bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] py-16 sm:py-24 text-white">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-white before:bg-white after:bg-white">まずはお気軽にお問い合わせください</h2>
+            <div class="contact-content max-w-3xl mx-auto">
+                <p class="text-lg leading-relaxed mb-8 text-center text-blue-50">
+                    教育支援・ワークショップや講演依頼など、<br>
+                    どんな小さなご相談でもお気軽にご連絡ください。<br>
+                    初回に限らず、相談は無料で承っております。
+                </p>
+                <div class="flex justify-center">
+                    <!-- CTAボタン (他のボタンと同じデザインに統一 = 白背景・青文字) -->
+                    <a class="cta-button py-3 px-10 rounded-full text-lg font-bold shadow-lg transition transform hover:-translate-y-1 block" href="https://docs.google.com/forms/d/e/1FAIpQLSfT027WJZyBzb6FulIPU-Rkz6tsgTvjTdcpyZiWTMYDm5NxXQ/viewform?usp=dialog" target="_blank">
+                        お問い合わせ
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- COMPANY PAGE -->
+    <!-- ============================================== -->
+    <div class="page" id="company">
+        <div class="company-hero bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white pt-24 pb-16 text-center">
+            <h1 class="text-4xl font-bold mb-2">会社概要</h1>
+            <p class="text-lg">Learning Bridgeについて</p>
+        </div>
+        <section class="philosophy-section bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">私たちの理念</h2>
+            <div class="max-w-3xl mx-auto space-y-12">
+                <div class="p-8 sm:p-12 text-center bg-white rounded-xl shadow-lg border-t-4 border-[#0ea5e9]">
+                    <h3 class="text-xl text-gray-500 mb-3">Philosophy（理念）</h3>
+                    <!-- 文字サイズを小さく -->
+                    <p class="text-2xl sm:text-3xl font-extrabold text-[#0ea5e9] leading-relaxed">学びを、人生の"羅針盤"に！！</p>
+                </div>
+                <div class="p-8 sm:p-12 text-center bg-white rounded-xl shadow-lg border-t-4 border-[#0ea5e9]">
+                    <h3 class="text-xl text-gray-500 mb-3">Mission（使命） </h3>
+                    <p class="text-xl sm:text-2xl font-extrabold text-[#0ea5e9] leading-relaxed">一人ひとりが共に学び合い<br>挑戦できる環境を創る</p>
+                </div>
+                <div class="p-8 sm:p-12 text-center bg-white rounded-xl shadow-lg border-t-4 border-[#0ea5e9]">
+                    <h3 class="text-xl text-gray-500 mb-3">Vision（目指す未来）</h3>
+                    <p class="text-xl sm:text-2xl font-extrabold text-[#0ea5e9] leading-relaxed">学生が学ぶべき本質的な教育で<br>主体性を最大限まで引き出し<br>人生を動かす起点にする</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="message-section bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">代表メッセージ</h2>
+            <div class="message-grid max-w-5xl mx-auto grid gap-8 items-start">
+                <div class="message-profile bg-gray-50 p-6 rounded-xl text-center shadow-lg">
+                    <!-- 顔写真を大きく横長に -->
+                    <div class="profile-image w-full max-w-sm h-64 bg-white rounded-xl mx-auto mb-6 overflow-hidden shadow-md">
+                        <img src="https://i.imgur.com/DKiIcFj.jpeg" 
+                            alt="代表理事 川村政輝の顔写真" 
+                            class="w-full h-full object-cover rounded-xl object-top"
+                            onerror="this.src='https://placehold.co/400x300/cccccc/000000?text=Error';">
+                    </div>
+                    <!-- 肩書きを復活 -->
+                    <div class="text-base text-gray-600 mb-1">代表理事</div>
+                    <div class="text-2xl font-bold text-gray-800 mb-3">川村　政輝</div>
+                    <div class="social-links flex justify-center gap-3">
+                        <a href="https://x.com/2002_bourbon" target="_blank" class="w-10 h-10 rounded-full overflow-hidden transition duration-300 hover:scale-110" title="X (Twitter)">
+                            <img src="https://i.imgur.com/fDFbewC.png" alt="Xアイコン" class="w-full h-full object-cover rounded-full">
+                        </a>
+                        <a href="https://www.facebook.com/profile.php?id=61560536932574" target="_blank" class="w-10 h-10 rounded-full overflow-hidden transition duration-300 hover:scale-110" title="Facebook">
+                            <img src="https://i.imgur.com/UKdsI9v.jpeg" alt="Facebookアイコン" class="w-full h-full object-cover rounded-full">
+                        </a>
+                        <a href="https://note.com/2002_bourbon" target="_blank" class="w-10 h-10 rounded-full overflow-hidden transition duration-300 hover:scale-110" title="note">
+                            <img src="https://i.imgur.com/Ibmry9Z.png" alt="noteアイコン" class="w-full h-full object-cover rounded-full">
+                        </a>
+                    </div>
+                </div>
+                <div class="message-content bg-gray-50 p-8 rounded-xl shadow-lg">
+                    <p class="text-xl font-bold text-[#0ea5e9] mb-6 leading-relaxed">もし、今の教育がこのまま何も変わらなかったら——。</p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        これは、私自身が教育事業に取り組もうと思った原点です。
+                    </p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        高校サッカーの名門・静岡学園高校で青春を懸けてきた私は、高校3年の夏、最後の甲子園をかけた大会が中止となり、努力のすべてが報われない現実を目の当たりにしました。
+                        そのとき痛感したのは、「挑戦できる環境こそが、人の可能性を育てる」ということでした。
+                    </p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        その後、京都産業大学・生命科学部に進学し、高校の理科教員を志して教職課程を履修。
+                        学校インターンなどを通して教育現場に関わる中で、「学生の受け身な学び」と「教員の限界を超えた努力」という２つの現実に直面しました。
+                        どちらも懸命でありながら、構造そのものが変わらなければ誰も報われない。
+                        ——そう感じたのです。
+                    </p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        このままでは、若者が未来を切り拓く力を失ってしまう。
+                        だからこそ、学びの根本から「リビルド（再構築）」していきたい。
+                        既存の仕組みを整えるのではなく、教育という"環境そのもの"を変えていく。
+                    </p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        学生が自ら問いを立て、考え、行動できるように。
+                        教員が誇りをもって挑戦を支えられるように。
+                        そして、学びが社会とつながり、人生の"羅針盤"となるように。
+                    </p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        学びが人を動かし、人が社会を変えていく——。
+                        そんな未来を、皆さん共に築きたい。
+                    </p>
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        <strong class="text-[#0ea5e9] font-semibold">学生と教員、そして社会とつながる"共創の橋"、それが『Learning Bridge』です。</strong>
+                    </p>
+                    <p class="text-base text-gray-700 leading-relaxed">
+                        <strong class="text-[#0ea5e9] font-semibold">共に、日本の教育に新しい風を吹かせましょう！！</strong>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="company-info bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">会社情報</h2>
+            <div class="info-table-container max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-xl">
+                <table class="w-full border-collapse">
+                    <tbody>
+                        <tr class="border-b border-gray-200 last:border-b-0">
+                            <th class="text-left py-4 px-2 sm:px-4 text-[#0ea5e9] font-semibold w-1/3 text-base align-top">会社名</th>
+                            <td class="py-4 px-2 sm:px-4 text-gray-700 leading-relaxed text-base">一般社団法人Learning Bridge (設立準備中)</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 last:border-b-0">
+                            <th class="text-left py-4 px-2 sm:px-4 text-[#0ea5e9] font-semibold w-1/3 text-base align-top">代表理事</th>
+                            <td class="py-4 px-2 sm:px-4 text-gray-700 leading-relaxed text-base">川村 政輝</td>
+                        </tr>
+                        <!-- 理事・監事・構成員数を削除 -->
+                        <tr class="border-b border-gray-200 last:border-b-0">
+                            <th class="text-left py-4 px-2 sm:px-4 text-[#0ea5e9] font-semibold w-1/3 text-base align-top">所在地</th>
+                            <td class="py-4 px-2 sm:px-4 text-gray-700 leading-relaxed text-base">京都府京都市</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 last:border-b-0">
+                            <th class="text-left py-4 px-2 sm:px-4 text-[#0ea5e9] font-semibold w-1/3 text-base align-top">設立</th>
+                            <td class="py-4 px-2 sm:px-4 text-gray-700 leading-relaxed text-base">2025年12月（予定）</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 last:border-b-0">
+                            <th class="text-left py-4 px-2 sm:px-4 text-[#0ea5e9] font-semibold w-1/3 text-base align-top">事業内容</th>
+                            <td class="py-4 px-2 sm:px-4 text-gray-700 leading-relaxed text-base">
+                                教育支援・人材育成事業<br>
+                                 ◼︎ 授業準備・運営の伴走支援<br>
+                                 ◼︎ キャリア・社会教育の企画運営<br>
+                                 ◼︎ ワークショップ・教育系イベント企画運営
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- SERVICES PAGE -->
+    <!-- ============================================== -->
+    <div class="page" id="services">
+        <div class="services-hero bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white pt-24 pb-16 text-center">
+            <h1 class="text-4xl font-bold mb-2">サービス</h1>
+            <p class="text-lg">学生の主体性育成と教員の働き方改革を両立する教育支援</p>
+        </div>
+        
+        <section class="bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <div class="max-w-4xl mx-auto space-y-12">
+                <!-- Service 01 (改行を削除) -->
+                <div class="bg-white p-6 sm:p-10 rounded-xl border-t-4 border-[#0ea5e9] shadow-lg">
+                    <h3 class="text-3xl font-extrabold text-[#0ea5e9] mb-2">01　授業準備・運営の伴走支援</h3>
+                    <p class="text-lg font-semibold text-gray-500 mb-6">〜授業の"質"と"効率化"を両立する、現場密着型の支援〜</p>
+                    <p class="text-base text-gray-700 mb-6 leading-relaxed">
+                        主に高等学校・大学での授業準備・運営を対象に、教員と伴走しながら授業の準備・運営・振り返りまでを一体的に支援するサービスです。（小・中学校のご相談にも対応可能です。）<br><br>
+                        教育工学・認知心理学などの理論や文献を基盤に開発した独自メソッドを活用し、授業の目的設定から構成、振り返り・改善までを体系的にサポートします。<br><br>
+                        「主体的・対話的で深い学び」を実現するため、アクティブラーニングだけでなく、アクティブ・リコールやアイスブレイクなど、学生の思考・対話・行動を促す最新の教育手法の導入も支援します。<br><br>
+                        これにより、教員が一人で抱え込みがちな授業準備の心理的・時間的負担を軽減しながら、教育の質とワークライフバランスの両立を目指します。
+                    </p>
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold text-[#0ea5e9] mb-4">特徴</h4>
+                        <ul class="list-none p-0 space-y-2">
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">PDCA型支援：目的設定から授業後の振り返りまで一貫伴走</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">理論的裏付け：教育工学・認知心理学などを基盤とした授業運営</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">実践型メソッド：アクティブラーニングに加え、最新の教育手法を導入</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">負担軽減：準備時間の最適化と心理的ストレスの削減に貢献</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Service 02 -->
+                <div class="bg-white p-6 sm:p-10 rounded-xl border-t-4 border-[#0ea5e9] shadow-lg">
+                    <h3 class="text-3xl font-extrabold text-[#0ea5e9] mb-2">02　キャリア・社会教育の企画運営</h3>
+                    <p class="text-lg font-semibold text-gray-500 mb-6">〜実社会で生き抜く力を育む、実践的なスキルの習得〜</p>
+                    <p class="text-base text-gray-700 mb-6 leading-relaxed">
+                        学校教育では扱うことの少ない「金融リテラシー」「将来設計」「自己分析」「メンタルマネジメント」「生成AI」などを題材に、実社会で活躍するために必要不可欠なスキルの育成を目指した学び合いの場を提供いたします。<br><br>
+                        各校の教育目標・学年特性・地域性に合わせて内容をカスタマイズし、企画・設計段階から当日の運営までを包括的に支援します。学生自身の主体性の育成に基づき、自らで問いを立て、課題を発見し、その解決策を考えて実践に移すといった探究型の学習プロセスを通して、自律的な学習者としての成長を促します。<br><br>
+                        また、必要に応じて外部講師・ファシリテーターとして現場支援も実施しながら、教員の業務負担を軽減しつつ、本質的な学びの定着と学生が自らの意志で未来を描く力の育成を目指します。
+                    </p>
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold text-[#0ea5e9] mb-4">特徴</h4>
+                        <ul class="list-none p-0 space-y-2">
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">実践的テーマ：金融、キャリア、AI、メンタルなど社会直結型の学び</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">探究プロセス：自ら問いを立て、解決策を考える主体的な学習</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">全工程支援：企画・運営・振り返りまで包括的に支援</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">現場ファシリテーション：外部講師として教員の負担を軽減</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Service 03 (タイトルと詳細ページ内の改行を削除) -->
+                <div class="bg-white p-6 sm:p-10 rounded-xl border-t-4 border-[#0ea5e9] shadow-lg">
+                    <h3 class="text-3xl font-extrabold text-[#0ea5e9] mb-2">03　ワークショップ・教育系イベント企画運営</h3>
+                    <p class="text-lg font-semibold text-gray-500 mb-6">〜学びの"交差点"を創る、教育×社会の共創プラットフォーム〜</p>
+                    <p class="text-base text-gray-700 mb-6 leading-relaxed">
+                        企業・自治体・教育機関などと連携し、教育や人材育成をテーマとした共創型ワークショップ・イベントの企画・運営するサービスです。<br><br>
+                        学校外において、学生と社会人、教員と企業、異なる立場の人々が対話し、共に課題に向き合う「学びの交差点」を創出し、講演や一方向の学びではなく、参加者全員が考え、語り、行動を起こす場をデザインします。<br><br>
+                        これにより、教育と社会が双方向に学び合い、地域や組織の枠を越えて"学びが循環する社会的ネットワーク"の構築の促進を目指します。
+                    </p>
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold text-[#0ea5e9] mb-4">特徴</h4>
+                        <ul class="list-none p-0 space-y-2">
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">共創型設計：学生・教員・企業・自治体が対等に関わる場づくり</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">対話と行動の融合：講演＋ワークショップ＋アクション設計</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">継続的ネットワーク：イベント後もつながるコミュニティ形成</li>
+                            <li class="flex items-start text-base text-gray-700 before:content-['●'] before:text-[#0ea5e9] before:mr-2 before:pt-1">多様な開催形式：地域施設（対面）・オンラインまで柔軟対応</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 活動実績セクション全体を削除 -->
+        </section>
+
+        <!-- 参加学生からの声セクションの修正 -->
+        <section class="voice-section bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">参加学生からいただいた声</h2>
+            <div class="max-w-4xl mx-auto space-y-8">
+                <!-- Voice 1 -->
+                <div class="bg-gray-50 p-6 sm:p-8 rounded-xl shadow-lg border-l-4 border-[#0ea5e9]">
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        今回、初めてこういったワークショップに参加してみて、自分自身の将来に対する向き合い方に最も変化があったと感じています。今まではマイナス思考で自分自身の将来と向き合っていました。ですが、私は、現在様々な学生団体に所属しており、いつも着いてきてくれるメンバーのことを考え、将来のビジョンやそのための行動指針などを今回のようなワークショップを通じて、ポジティブに捉えられるようになりました。また、起業した方のお話を直接聞くことによって起業やその周辺の考え方にもまた1つ変化があったと思います。
+                    </p>
+                    <!-- 大学1年生の記述を削除 -->
+                    <p class="text-lg font-bold text-[#13538a] text-right mt-4">Y・Sさん</p>
+                </div>
+                <!-- Voice 2 -->
+                <div class="bg-gray-50 p-6 sm:p-8 rounded-xl shadow-lg border-l-4 border-[#0ea5e9]">
+                    <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                        今までワークショップに参加したことがほとんどなく、初めて会う人たちと議論することに不安を感じていました。しかし、本題に入る前に特徴的なアイスブレイクがあり、気軽に楽しむことができたおかげで自然と会話が生まれ、その後の議論では緊張も和らぎ、活発に意見交換ができました。近年、主体的な行動が求められる一方で、自ら意見を発することに苦手意識を持つ若者が増えているように感じますので、そういった意味でもこのような社会課題について考えるワークショップは、自分の考えを表現するきっかけを得られる貴重な機会だと思いました。
+                    </p>
+                    <!-- 大学4年生の記述を削除 -->
+                    <p class="text-lg font-bold text-[#13538a] text-right mt-4">M・Yさん</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white p-8 sm:p-12 rounded-xl text-center shadow-2xl">
+                <h3 class="text-3xl font-bold mb-4">お問い合わせ</h3>
+                <p class="text-lg leading-relaxed mb-8 text-white/90">
+                    教育支援・ワークショップや講演依頼など、<br>
+                    どんな小さなご相談でもお気軽にご連絡ください。<br>
+                    初回に限らず、相談は無料で承っております。
+                </p>
+                <!-- CTAボタンを他のCTAボタンと同じデザインに統一 -->
+                <a class="cta-button-inverse py-3 px-10 rounded-full text-lg font-bold shadow-lg transition transform hover:-translate-y-1 block" href="https://docs.google.com/forms/d/e/1FAIpQLSfT027WJZyBzb6FulIPU-Rkz6tsgTvjTdcpyZiWTMYDm5NxXQ/viewform?usp=dialog" target="_blank">
+                    お問い合わせ
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MEMBERSHIP PAGE -->
+    <!-- ============================================== -->
+    <div class="page" id="membership">
+        <div class="company-hero bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white pt-24 pb-16 text-center">
+            <h1 class="text-4xl font-bold mb-2">賛助会員（共創パートナー）募集</h1>
+            <p class="text-lg">教育を"支援"から"共創"へ</p>
+        </div>
+
+        <div class="text-center pt-8 pb-0 max-w-7xl mx-auto px-4">
+            <button class="cta-button py-3 px-8 rounded-full text-base font-bold" onclick="showPage('partners')">
+                会員・パートナー（一覧）を見る
+            </button>
+        </div>
+        
+        <section class="membership-section bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">共に、教育の未来を創りませんか？</h2>
+                <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                    教育とは、知識を教えることではありません。<br>
+                    それは、人が“自らの生き方”を見つけるための“環境づくり“だと、私たちは考えています。
+                </p>
+                <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                    今、教育はもはや“学校の中だけ“で完結するものではなくなりました。<br>
+                    生成AIの進化、人口減少、働き方の多様化など...<br>
+                    社会が大きく変化する今だからこそ、教育もまた、社会と共に進化していく必要があります。
+                </p>
+                <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                    私たちはこれまでに、授業準備や運営支援・探究学習・ワークショップなどを通じて、「学びが変われば、人は変わる」という確信を得てきました。<br>
+                    しかし、その一方で、現場ではいまだ、教員の多忙化や予算不足など、“変わりたくても変われない”構造的な課題が根強く残っています。
+                </p>
+                <p class="text-base text-gray-700 mb-4 leading-relaxed">
+                    だからこそ、教育と社会をつなぐ新しい仕組みが必要なのです。<br>
+                    私たちは、そんな“学びの橋”を架ける存在として、企業や団体の皆さまと共に、未来の教育、そして未来を担う若者たちの成長を「共創」していくべく、この賛助会員制度（共創パートナー募集）を立ち上げました。
+                </p>
+                <p class="text-xl font-bold text-[#13538a] text-center mt-8 leading-relaxed">
+                    教育を支えることは、未来を育てること。<br>
+                    その第一歩を、私たちと共に踏み出しませんか？
+                </p>
+            </div>
+        </section>
+        
+        <section class="membership-section bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">共に育てる未来への投資</h2>
+                <p class="text-xl font-bold text-[#0ea5e9] text-center mb-8 leading-relaxed">
+                    Learning Bridgeの賛助会員制度は、<br>
+                    単なる寄付ではなく、「教育×企業×社会」の価値を共に創るためのパートナーシップです。
+                </p>
+                <img src="https://i.imgur.com/VRar3HC.png" alt="教育の共創構成図" class="w-full max-w-lg h-auto rounded-xl mx-auto my-0 shadow-lg block">
+                <p class="text-center text-sm text-gray-500 mb-12 leading-snug">
+                    （ Learning Bridgeが描く未来の教育の共創構成図 ）
+                </p>
+
+                <div class="space-y-6">
+                    <!-- Benefit 1 (見出しを青色にする) -->
+                    <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:translate-y-[-5px] transition duration-300">
+                        <h4 class="benefit-title-styled mb-2">① 社会的価値（CSV・CSR）の創出</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            若者の主体性を育む教育への参画は、社会的価値の共創につながります。<br>
+                            教育を支えることは、未来の人材・文化・市場を育てること。<br>
+                            "持続可能な社会づくりに貢献する企業"としての信頼を高めます。
+                        </p>
+                    </div>
+                    <!-- Benefit 2 (見出しを青色にする) -->
+                    <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:translate-y-[-5px] transition duration-300">
+                        <h4 class="benefit-title-styled mb-2">② ブランド価値・信頼の向上</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            教育支援に取り組む企業は、社会的信用度の高いブランドとして認知されやすく、<br>
+                            採用・広報・ブランディングのあらゆる場面でプラスの影響をもたらします。<br>
+                            「人を育てる企業」という姿勢は、教育関係者・学生・保護者にも確実に届きます。
+                        </p>
+                    </div>
+                    <!-- Benefit 3 (見出しを青色にする) -->
+                    <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:translate-y-[-5px] transition duration-300">
+                        <h4 class="benefit-title-styled mb-2">③ 社員研修・人材育成の拡充</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            私たちが支援する"主体的な学び"の設計思想は、<br>
+                            企業の社員研修・リーダー育成・チームビルディングにも応用可能です。<br>
+                            教育現場で蓄積した理論と実践を、御社の人材育成に還元できます。
+                        </p>
+                    </div>
+                    <!-- Benefit 4 (見出しを青色にする) -->
+                    <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:translate-y-[-5px] transition duration-300">
+                        <h4 class="benefit-title-styled mb-2">④ 学生との接点創出・採用ブランディング</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            全国の高校・大学と連携するLearning Bridgeのネットワークを通じて、<br>
+                            御社の理念や事業に共感する学生との出会いが生まれます。<br>
+                            「採用の前に、共に学ぶ」関係性の中で、真に共感でつながる採用を実現します。
+                        </p>
+                    </div>
+                    <!-- Benefit 5 (見出しを青色にする) -->
+                    <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md hover:translate-y-[-5px] transition duration-300">
+                        <h4 class="benefit-title-styled mb-2">⑤ 共創による新たな価値創出</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            教育をテーマにした共同イベント・カリキュラム開発など、<br>
+                            企業と学生が共に挑戦できる新しいプロジェクトを共創できます。<br>
+                            社会課題の解決や新規事業の構想など、"教育を通じた共創"がここにあります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="membership-section bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">会員費</h2>
+                <div class="bg-white p-8 rounded-xl shadow-lg mb-12">
+                    <h3 class="text-2xl font-bold text-[#13538a] border-b-2 border-blue-100 pb-2 mb-4">年会費</h3>
+                    <!-- 50万円〜と(1年単位)の間の空白を1マス分に修正 -->
+                    <p class="text-4xl font-extrabold text-[#0ea5e9] mb-4 leading-relaxed tracking-wider">
+                        50万円〜　（1年単位）
+                    </p>
+                    <ul class="list-none p-0 text-base text-gray-600 leading-relaxed space-y-1">
+                        <li>※入会金は不要です。</li>
+                        <li>※年会費は月額での分割払いにも対応しております。</li>
+                        <li>※会員期間は入会日から1年間。以降は自動更新となりますが、退会をご希望の場合は更新月の前月までにお申し出ください。</li>
+                    </ul>
+                    <p class="mt-8 text-base text-gray-700">
+                        <strong class="text-[#13538a] font-extrabold">なお、いただいた会費は、教育支援にかかる費用および学生の人材育成・活動支援などに充て、すべて“未来の学び”のために活用いたします。</strong>
+                    </p>
+                </div>
+
+                <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">会員特典</h2>
+                <p class="text-center text-base text-gray-600 mb-8">
+                    賛助会員（共創パートナー）としてご参画いただける企業・団体の皆さまには、教育支援・人材育成・広報連携など、私たちの活動に合わせた特典をご用意しております。
+                </p>
+                
+                <div class="space-y-6">
+                    <h4 class="text-xl font-bold text-[#13538a] border-b-2 border-blue-100 pb-2 mb-4">
+                        主な特典内容（例）
+                    </h4>
+                    <div class="bg-white p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md">
+                        <h4 class="text-lg font-semibold text-[#0ea5e9] mb-2">教育コンテンツ共同開発</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            御社の理念や専門分野を活かしたワークショップ・探究プログラム・教材の共同開発が可能です。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md">
+                        <h4 class="text-lg font-semibold text-[#0ea5e9] mb-2">イベント特典</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            共催ワークショップ・講演会・セミナーなどへの優先参加や、協賛イベントでの登壇・展示機会をご提供します。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md">
+                        <h4 class="text-lg font-semibold text-[#0ea5e9] mb-2">広報・PR特典</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            公式サイト・SNS・パンフレット等に企業ロゴや取り組み内容を掲載し、社会貢献・教育支援活動を広く発信します。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border-l-4 border-[#0ea5e9] shadow-md">
+                        <h4 class="text-lg font-semibold text-[#0ea5e9] mb-2">人材育成特典</h4>
+                        <p class="text-base text-gray-700 leading-relaxed">
+                            独自メソッドを活用した社員研修・リーダー育成・チームビルディング・教育コンサルティングを実施します。
+                        </p>
+                    </div>
+                </div>
+
+                <p class="mt-8 text-sm leading-relaxed text-gray-500">
+                    ※特典の内容および適用範囲は、会員区分によって異なります。<br>
+                    ※会員区分によっては、御社のニーズに合わせた特典内容のカスタマイズも可能です。
+                </p>
+            </div>
+        </section>
+
+        <section class="membership-section bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">ご参画までの流れ</h2>
+                <p class="text-base text-gray-700 mb-6 leading-relaxed">
+                    企業・団体の皆さまが安心してご参画いただけるよう、まずは1度、ラフにお話しすることから始めていければと思います。
+                </p>
+                <div class="text-center mb-12">
+                    <a class="cta-button py-3 px-8 rounded-full text-base font-bold" href="https://docs.google.com/forms/d/e/1FAIpQLScfNGLFewn0iyE-Xke0NeKSEvIWnty8kVok6wsgJvjKoFr_7Q/viewform?usp=dialog" target="_blank">参画申込フォーム</a>
+                </div>
+                <p class="text-base text-gray-700 leading-relaxed">
+                    御社の想いや事業内容との接点を共に探りながら、どのような形で共創できるかを丁寧に考えていきます。
+                    その後、内容にご納得いただけましたら、契約締結後、正式に賛助会員（共創パートナー）としてご参画いただけます。
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- NEWS PAGE -->
+    <!-- ============================================== -->
+    <div class="page" id="news">
+        <div class="news-hero bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white pt-24 pb-16 text-center">
+            <h1 class="text-4xl font-bold mb-2">お知らせ</h1>
+            <p class="text-lg">最新情報・活動報告をお届けします</p>
+        </div>
+        <section class="bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">最新情報 </h2>
+            <div class="news-list max-w-4xl mx-auto">
+                <!-- ニュース項目 1 -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#0ea5e9] transition duration-300 hover:shadow-lg cursor-pointer" onclick="console.log('ニュース詳細ページへ遷移')">
+                    <div class="flex items-center mb-2">
+                        <div class="text-sm text-gray-500 pr-4">2025年10月21日</div>
+                        <span class="text-xs font-bold text-white bg-red-500 px-2 py-1 rounded-md">重要</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mt-2 mb-3 leading-relaxed">一般社団法人Learning Bridge 設立準備開始のお知らせ</h3>
+                    <p class="text-base text-gray-600 leading-relaxed">
+                        2025年12月上旬に、一般社団法人Learning Bridgeの設立を目指し、準備を進めております。<br>
+                        学生の主体性育成と教員の働き方改革を両立する教育支援事業を展開してまいります。
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PARTNERS PAGE (連携・協力パートナーのカテゴリを修正) -->
+    <!-- ============================================== -->
+    <div class="page" id="partners">
+        <div class="partners-hero bg-gradient-to-r from-[#0ea5e9] to-[#3b82f6] text-white pt-24 pb-16 text-center">
+            <h1 class="text-4xl font-bold mb-2">会員・パートナー（一覧）</h1>
+            <p class="text-lg">賛助会員および連携・協力いただいているパートナーの紹介</p>
+        </div>
+        
+        <section class="membership-section bg-white py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">会員（企業・団体）</h2>
+            <div class="max-w-3xl mx-auto text-center">
+                <p class="text-base text-gray-700 mb-12">
+                    私たちの理念に共感し、賛助会員として参画いただいている企業・団体の皆さまです。
+                </p>
+                <h3 class="text-5xl font-extrabold text-[#0ea5e9] mt-8">COMING SOON</h3>
+                <!-- 将来のロゴ掲載のためのグリッドコンテナ -->
+                <div class="partner-grid mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 hidden">
+                    <!-- <div class="partner-card bg-gray-50 p-4 rounded-lg shadow-sm">ロゴ掲載予定</div> -->
+                </div>
+            </div>
+        </section>
+
+        <section class="membership-section bg-gray-50 py-16 sm:py-24 max-w-7xl mx-auto px-4">
+            <h2 class="h2-title text-3xl font-bold mb-12 text-center text-[#13538a]">連携・協力パートナー</h2>
+            <div class="max-w-3xl mx-auto">
+                <p class="text-base text-gray-700 text-center mb-12">
+                    私たちの活動にご協力・ご後援いただいている、行政・教育機関・企業・NPOなどの皆さまです。
+                </p>
+
+                <!-- 修正後の「行政」 -->
+                <div class="mb-10">
+                    <h3 class="text-2xl font-bold text-[#13538a] border-b-2 border-blue-200 pb-2 mb-6">行政</h3>
+                    <div class="text-center">
+                        <h3 class="text-4xl font-extrabold text-[#0ea5e9] mt-4">COMING SOON</h3>
+                    </div>
+                </div>
+
+                <!-- 修正後の「企業・団体」 -->
+                <div class="mb-10">
+                    <h3 class="text-2xl font-bold text-[#13538a] border-b-2 border-blue-200 pb-2 mb-6">企業・団体</h3>
+                    <div class="text-center">
+                        <h3 class="text-4xl font-extrabold text-[#0ea5e9] mt-4">COMING SOON</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FOOTER -->
+    <!-- ============================================== -->
+    <footer class="bg-[#1b6895] text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div class="footer-content max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <div class="footer-about">
+                <h3 class="text-2xl font-bold mb-4">Learning Bridge</h3>
+                <p class="mt-4 leading-relaxed text-blue-100">
+                    学びを、人生の"羅針盤"に！！
+                </p>
+                <p class="mt-4 text-sm text-gray-300">
+                    現在、『一般社団法人』設立準備中
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4 class="text-lg font-semibold mb-4 text-gray-300">ページ</h4>
+                <ul class="list-none p-0 m-0 space-y-2">
+                    <li><a onclick="showPage('company')" class="text-blue-100 hover:text-white transition cursor-pointer text-base block">会社概要</a></li>
+                    <li><a onclick="showPage('services')" class="text-blue-100 hover:text-white transition cursor-pointer text-base block">サービス</a></li>
+                    <li><a onclick="showPage('membership')" class="text-blue-100 hover:text-white transition cursor-pointer text-base block">賛助会員募集</a></li>
+                    <li><a onclick="showPage('news')" class="text-blue-100 hover:text-white transition cursor-pointer text-base block">お知らせ</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4 class="text-lg font-semibold mb-4 text-gray-300">お問い合わせ</h4>
+                <ul class="list-none p-0 m-0 space-y-2">
+                    <li class="p-0">
+                        <a class="cta-button py-2 px-4 rounded-full text-base font-bold text-white border-white !bg-transparent text-center block" href="https://docs.google.com/forms/d/e/1FAIpQLSfT027WJZyBzb6FulIPU-Rkz6tsgTvjTdcpyZiWTMYDm5NxXQ/viewform?usp=dialog" target="_blank">お問い合わせ</a>
+                    </li>
+                    <li class="text-blue-100 mt-4 text-center text-base">Email<br>info@learning-b.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center mt-8 pt-6 border-t border-white/20 text-sm text-gray-300">
+            <p>&copy; 2025 Learning Bridge. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ============================================== -->
+    <!-- JAVASCRIPT LOGIC -->
+    <!-- ============================================== -->
+    <script>
+        // ページ切り替え
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // ページトップへスクロール
+        }
+
+        // ハンバーガーメニューの開閉
+        function toggleMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const sideMenu = document.querySelector('.side-menu');
+            const overlay = document.querySelector('.overlay');
+
+            // クラスの付け替え
+            hamburger.classList.toggle('active');
+            sideMenu.classList.toggle('active');
+            
+            // オーバーレイの表示切替
+            if (sideMenu.classList.contains('active')) {
+                overlay.classList.remove('invisible', 'opacity-0');
+            } else {
+                overlay.classList.add('invisible', 'opacity-0');
+            }
+
+            // ハンバーガーメニューのアニメーション
+            if (hamburger.classList.contains('active')) {
+                hamburger.querySelector('span:nth-child(1)').style.transform = 'rotate(45deg) translate(8px, 8px)';
+                hamburger.querySelector('span:nth-child(2)').style.opacity = '0';
+                hamburger.querySelector('span:nth-child(3)').style.transform = 'rotate(-45deg) translate(8px, -8px)';
+            } else {
+                hamburger.querySelector('span:nth-child(1)').style.transform = 'none';
+                hamburger.querySelector('span:nth-child(2)').style.opacity = '1';
+                hamburger.querySelector('span:nth-child(3)').style.transform = 'none';
+            }
+        }
+
+        // 初期表示時にトップページを表示
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('home');
+        });
+    </script>
+</body>
+</html>
